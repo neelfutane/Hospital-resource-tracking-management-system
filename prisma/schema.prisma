@@ -7,6 +7,145 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id            String         @id @default(uuid())
+  email         String         @unique
+  password      String
+  firstName     String
+  lastName      String
+  role          UserRole
+  department    Department?
+  isActive      Boolean        @default(true)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  auditLogs     AuditLog[]
+  notifications Notification[]
+
+  @@map("users")
+}
+
+model Bed {
+  id          String         @id @default(uuid())
+  bedNumber   String
+  department  Department
+  floor       Int
+  room        String?
+  status      ResourceStatus @default(AVAILABLE)
+  patientName String?
+  patientId   String?
+  notes       String?
+  lastUpdated DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  auditLogs   AuditLog[]     @relation("BedAuditLogs")
+
+  @@map("beds")
+}
+
+model Room {
+  id               String         @id @default(uuid())
+  roomNumber       String
+  type             String
+  department       Department
+  floor            Int
+  status           ResourceStatus @default(AVAILABLE)
+  capacity         Int
+  currentOccupancy Int            @default(0)
+  scheduledFor     DateTime?
+  notes            String?
+  lastUpdated      DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  auditLogs        AuditLog[]     @relation("RoomAuditLogs")
+
+  @@map("rooms")
+}
+
+model Equipment {
+  id              String         @id @default(uuid())
+  name            String
+  type            String
+  model           String?
+  serialNumber    String?        @unique
+  department      Department
+  location        String
+  status          ResourceStatus @default(AVAILABLE)
+  lastMaintenance DateTime?
+  nextMaintenance DateTime?
+  notes           String?
+  lastUpdated     DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  auditLogs       AuditLog[]     @relation("EquipmentAuditLogs")
+
+  @@map("equipment")
+}
+
+model Alert {
+  id             String         @id @default(uuid())
+  type           AlertType
+  priority       AlertPriority
+  title          String
+  message        String
+  department     Department?
+  resourceId     String?
+  resourceType   String?
+  threshold      Int?
+  currentValue   Int?
+  isActive       Boolean        @default(true)
+  acknowledged   Boolean        @default(false)
+  acknowledgedBy String?
+  acknowledgedAt DateTime?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  notifications  Notification[]
+
+  @@map("alerts")
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  alertId   String?
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  alert     Alert?   @relation(fields: [alertId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+model AuditLog {
+  id           String     @id @default(uuid())
+  userId       String
+  action       String
+  resourceType String
+  resourceId   String
+  bedId        String?
+  roomId       String?
+  equipmentId  String?
+  oldValue     Json?
+  newValue     Json?
+  ipAddress    String?
+  userAgent    String?
+  timestamp    DateTime   @default(now())
+  bed          Bed?       @relation("BedAuditLogs", fields: [bedId], references: [id])
+  equipment    Equipment? @relation("EquipmentAuditLogs", fields: [equipmentId], references: [id])
+  room         Room?      @relation("RoomAuditLogs", fields: [roomId], references: [id])
+  user         User       @relation(fields: [userId], references: [id])
+
+  @@map("audit_logs")
+}
+
+model SystemSettings {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  value       String
+  description String?
+  updatedAt   DateTime @updatedAt
+
+  @@map("system_settings")
+}
+
 enum UserRole {
   ADMIN
   DOCTOR
@@ -48,152 +187,4 @@ enum AlertPriority {
   MEDIUM
   HIGH
   CRITICAL
-}
-
-model User {
-  id         String      @id @default(uuid())
-  email      String      @unique
-  password   String
-  firstName  String
-  lastName   String
-  role       UserRole
-  department Department?
-  isActive   Boolean     @default(true)
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
-
-  auditLogs     AuditLog[]
-  notifications Notification[]
-
-  @@map("users")
-}
-
-model Bed {
-  id          String         @id @default(uuid())
-  bedNumber   String
-  department  Department
-  floor       Int
-  room        String?
-  status      ResourceStatus @default(AVAILABLE)
-  patientName String?
-  patientId   String?
-  notes       String?
-  lastUpdated DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
-
-  auditLogs AuditLog[] @relation("BedAuditLogs")
-
-  @@unique([bedNumber, department])
-  @@map("beds")
-}
-
-model Room {
-  id               String         @id @default(uuid())
-  roomNumber       String
-  type             String
-  department       Department
-  floor            Int
-  status           ResourceStatus @default(AVAILABLE)
-  capacity         Int
-  currentOccupancy Int            @default(0)
-  scheduledFor     DateTime?
-  notes            String?
-  lastUpdated      DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
-
-  auditLogs AuditLog[] @relation("RoomAuditLogs")
-
-  @@unique([roomNumber, department])
-  @@map("rooms")
-}
-
-model Equipment {
-  id              String         @id @default(uuid())
-  name            String
-  type            String
-  model           String?
-  serialNumber    String?        @unique
-  department      Department
-  location        String
-  status          ResourceStatus @default(AVAILABLE)
-  lastMaintenance DateTime?
-  nextMaintenance DateTime?
-  notes           String?
-  lastUpdated     DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
-
-  auditLogs AuditLog[] @relation("EquipmentAuditLogs")
-
-  @@map("equipment")
-}
-
-model Alert {
-  id             String        @id @default(uuid())
-  type           AlertType
-  priority       AlertPriority
-  title          String
-  message        String
-  department     Department?
-  resourceId     String?
-  resourceType   String?
-  threshold      Int?
-  currentValue   Int?
-  isActive       Boolean       @default(true)
-  acknowledged   Boolean       @default(false)
-  acknowledgedBy String?
-  acknowledgedAt DateTime?
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
-
-  notifications Notification[]
-
-  @@map("alerts")
-}
-
-model Notification {
-  id        String   @id @default(uuid())
-  userId    String
-  alertId   String?
-  title     String
-  message   String
-  isRead    Boolean  @default(false)
-  createdAt DateTime @default(now())
-
-  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  alert Alert? @relation(fields: [alertId], references: [id], onDelete: SetNull)
-
-  @@map("notifications")
-}
-
-model AuditLog {
-  id           String   @id @default(uuid())
-  userId       String
-  action       String
-  resourceType String
-  resourceId   String
-  bedId        String?
-  roomId       String?
-  equipmentId  String?
-  oldValue     Json?
-  newValue     Json?
-  ipAddress    String?
-  userAgent    String?
-  timestamp    DateTime @default(now())
-
-  user      User       @relation(fields: [userId], references: [id])
-  bed       Bed?       @relation("BedAuditLogs", fields: [bedId], references: [id])
-  room      Room?      @relation("RoomAuditLogs", fields: [roomId], references: [id])
-  equipment Equipment? @relation("EquipmentAuditLogs", fields: [equipmentId], references: [id])
-
-  @@map("audit_logs")
-}
-
-model SystemSettings {
-  id          String   @id @default(uuid())
-  key         String   @unique
-  value       String
-  description String?
-  updatedAt   DateTime @updatedAt
-
-  @@map("system_settings")
 }

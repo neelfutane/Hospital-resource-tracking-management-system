@@ -35,7 +35,13 @@ app.use(
 
 app.use(
   cors({
-    origin: [FRONTEND_URL, "http://localhost:3000", "http://localhost:3001"],
+    origin: function (origin, callback) {
+      if (!origin || origin.startsWith("http://localhost")) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   })
 );
