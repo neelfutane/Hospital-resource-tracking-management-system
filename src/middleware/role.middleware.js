@@ -17,11 +17,11 @@ const authorize = (...allowedRoles) => {
 // Role-based permission checks
 const permissions = {
   // Admin can do everything
-  ADMIN: ['*'],
+  ADMIN: ['*', 'beds:create', 'beds:delete', 'audit:export'],
   
   // Doctor permissions
   DOCTOR: [
-    'beds:read', 'beds:update',
+    'beds:read', 'beds:update', 'beds:create', 'beds:delete',
     'rooms:read', 'rooms:update',
     'equipment:read', 'equipment:update',
     'alerts:read',

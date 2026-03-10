@@ -83,6 +83,7 @@ model Bed {
 
   auditLogs AuditLog[] @relation("BedAuditLogs")
 
+  @@unique([bedNumber, department])
   @@map("beds")
 }
 
@@ -102,6 +103,7 @@ model Room {
 
   auditLogs AuditLog[] @relation("RoomAuditLogs")
 
+  @@unique([roomNumber, department])
   @@map("rooms")
 }
 

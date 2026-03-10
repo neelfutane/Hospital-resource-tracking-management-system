@@ -1,6 +1,7 @@
 const { prisma } = require('../../config/db');
 const ApiResponse = require('../../utils/apiResponse');
 const logger = require('../../utils/logger');
+const ResourceSocket = require('../../sockets/resource.socket');
 
 class EquipmentService {
   async createEquipment(equipmentData, userId) {
@@ -32,6 +33,9 @@ class EquipmentService {
 
       // Log the action
       await this.logAudit(userId, 'CREATE', 'equipment', equipment.id, null, equipment);
+
+      // Broadcast creation
+      ResourceSocket.broadcastResourceCreate('equipment', equipment, department);
 
       logger.info(`Equipment created: ${name} (${type}) in ${department}`);
 
@@ -134,6 +138,9 @@ class EquipmentService {
       // Log the action
       await this.logAudit(userId, 'UPDATE', 'equipment', equipmentId, existingEquipment, updatedEquipment);
 
+      // Broadcast update
+      ResourceSocket.broadcastResourceUpdate('equipment', updatedEquipment, updatedEquipment.department);
+
       logger.info(`Equipment updated: ${updatedEquipment.name}`);
 
       return ApiResponse.success(updatedEquipment, 'Equipment updated successfully');
@@ -159,6 +166,9 @@ class EquipmentService {
 
       // Log the action
       await this.logAudit(userId, 'DELETE', 'equipment', equipmentId, existingEquipment, null);
+
+      // Broadcast deletion
+      ResourceSocket.broadcastResourceDelete('equipment', existingEquipment, existingEquipment.department);
 
       logger.info(`Equipment deleted: ${existingEquipment.name}`);
 
@@ -193,6 +203,10 @@ class EquipmentService {
       // Log the action
       await this.logAudit(userId, 'UPDATE', 'equipment', equipmentId, existingEquipment, updatedEquipment);
 
+      // Broadcast status change
+      ResourceSocket.broadcastStatusChange('equipment', equipmentId, existingEquipment.status, status, updatedEquipment.department);
+      ResourceSocket.broadcastResourceUpdate('equipment', updatedEquipment, updatedEquipment.department);
+
       logger.info(`Equipment status updated: ${updatedEquipment.name} -> ${status}`);
 
       return ApiResponse.success(updatedEquipment, 'Equipment status updated successfully');
@@ -222,6 +236,9 @@ class EquipmentService {
 
       // Log the action
       await this.logAudit(userId, 'UPDATE', 'equipment', equipmentId, existingEquipment, updatedEquipment);
+
+      // Broadcast update
+      ResourceSocket.broadcastResourceUpdate('equipment', updatedEquipment, updatedEquipment.department);
 
       logger.info(`Maintenance scheduled for equipment: ${updatedEquipment.name}`);
 
@@ -258,6 +275,10 @@ class EquipmentService {
 
       // Log the action
       await this.logAudit(userId, 'UPDATE', 'equipment', equipmentId, existingEquipment, updatedEquipment);
+
+      // Broadcast update and status change
+      ResourceSocket.broadcastResourceUpdate('equipment', updatedEquipment, updatedEquipment.department);
+      ResourceSocket.broadcastStatusChange('equipment', equipmentId, existingEquipment.status, 'AVAILABLE', updatedEquipment.department);
 
       logger.info(`Maintenance completed for equipment: ${updatedEquipment.name}`);
 

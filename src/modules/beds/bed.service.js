@@ -1,6 +1,7 @@
 const { prisma } = require('../../config/db');
 const ApiResponse = require('../../utils/apiResponse');
 const logger = require('../../utils/logger');
+const ResourceSocket = require('../../sockets/resource.socket');
 
 class BedService {
   async createBed(bedData, userId) {
@@ -31,6 +32,9 @@ class BedService {
 
       // Log the action
       await this.logAudit(userId, 'CREATE', 'bed', bed.id, null, bed);
+
+      // Broadcast creation
+      ResourceSocket.broadcastResourceCreate('bed', bed, department);
 
       logger.info(`Bed created: ${bedNumber} in ${department}`);
 
@@ -121,6 +125,9 @@ class BedService {
       // Log the action
       await this.logAudit(userId, 'UPDATE', 'bed', bedId, existingBed, updatedBed);
 
+      // Broadcast update
+      ResourceSocket.broadcastResourceUpdate('bed', updatedBed, updatedBed.department);
+
       logger.info(`Bed updated: ${updatedBed.bedNumber}`);
 
       return ApiResponse.success(updatedBed, 'Bed updated successfully');
@@ -146,6 +153,9 @@ class BedService {
 
       // Log the action
       await this.logAudit(userId, 'DELETE', 'bed', bedId, existingBed, null);
+
+      // Broadcast deletion
+      ResourceSocket.broadcastResourceDelete('bed', existingBed, existingBed.department);
 
       logger.info(`Bed deleted: ${existingBed.bedNumber}`);
 
@@ -179,6 +189,10 @@ class BedService {
 
       // Log the action
       await this.logAudit(userId, 'UPDATE', 'bed', bedId, existingBed, updatedBed);
+
+      // Broadcast status change
+      ResourceSocket.broadcastStatusChange('bed', bedId, existingBed.status, status, updatedBed.department);
+      ResourceSocket.broadcastResourceUpdate('bed', updatedBed, updatedBed.department);
 
       logger.info(`Bed status updated: ${updatedBed.bedNumber} -> ${status}`);
 

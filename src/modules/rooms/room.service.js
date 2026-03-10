@@ -1,6 +1,7 @@
 const { prisma } = require('../../config/db');
 const ApiResponse = require('../../utils/apiResponse');
 const logger = require('../../utils/logger');
+const ResourceSocket = require('../../sockets/resource.socket');
 
 class RoomService {
   async createRoom(roomData, userId) {
@@ -33,6 +34,9 @@ class RoomService {
 
       // Log the action
       await this.logAudit(userId, 'CREATE', 'room', room.id, null, room);
+
+      // Broadcast creation
+      ResourceSocket.broadcastResourceCreate('room', room, department);
 
       logger.info(`Room created: ${roomNumber} in ${department}`);
 
@@ -129,6 +133,9 @@ class RoomService {
       // Log the action
       await this.logAudit(userId, 'UPDATE', 'room', roomId, existingRoom, updatedRoom);
 
+      // Broadcast update
+      ResourceSocket.broadcastResourceUpdate('room', updatedRoom, updatedRoom.department);
+
       logger.info(`Room updated: ${updatedRoom.roomNumber}`);
 
       return ApiResponse.success(updatedRoom, 'Room updated successfully');
@@ -158,6 +165,9 @@ class RoomService {
 
       // Log the action
       await this.logAudit(userId, 'DELETE', 'room', roomId, existingRoom, null);
+
+      // Broadcast deletion
+      ResourceSocket.broadcastResourceDelete('room', existingRoom, existingRoom.department);
 
       logger.info(`Room deleted: ${existingRoom.roomNumber}`);
 
@@ -191,6 +201,10 @@ class RoomService {
 
       // Log the action
       await this.logAudit(userId, 'UPDATE', 'room', roomId, existingRoom, updatedRoom);
+
+      // Broadcast status change
+      ResourceSocket.broadcastStatusChange('room', roomId, existingRoom.status, status, updatedRoom.department);
+      ResourceSocket.broadcastResourceUpdate('room', updatedRoom, updatedRoom.department);
 
       logger.info(`Room status updated: ${updatedRoom.roomNumber} -> ${status}`);
 
@@ -231,6 +245,9 @@ class RoomService {
 
       // Log the action
       await this.logAudit(userId, 'UPDATE', 'room', roomId, existingRoom, updatedRoom);
+
+      // Broadcast update
+      ResourceSocket.broadcastResourceUpdate('room', updatedRoom, updatedRoom.department);
 
       logger.info(`Room occupancy updated: ${updatedRoom.roomNumber} -> ${newOccupancy}/${updatedRoom.capacity}`);
 
