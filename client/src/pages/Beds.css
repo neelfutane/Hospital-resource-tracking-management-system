@@ -1,0 +1,555 @@
+.beds-page {
+  min-height: 100vh;
+  background: linear-gradient(145deg, #e8f0fe 0%, #dbeafe 50%, #c7d9ff 100%);
+  background-attachment: fixed;
+  position: relative;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+}
+
+/* Soft medical pattern overlay */
+.beds-page::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 30% 40%, rgba(52, 144, 220, 0.06) 0%, transparent 35%),
+    radial-gradient(circle at 80% 70%, rgba(147, 51, 234, 0.06) 0%, transparent 40%),
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.03) 0px, rgba(255, 255, 255, 0.03) 2px, transparent 2px, transparent 10px),
+    url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 5 L55 30 L30 55 L5 30 L30 5' fill='none' stroke='rgba(255,255,255,0.02)' stroke-width='1'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+.beds-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+.beds-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(12px);
+  padding: 1.5rem 2.2rem;
+  border-radius: 48px;
+  box-shadow: 
+    0 20px 40px -15px rgba(52, 144, 220, 0.25),
+    0 8px 20px -10px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(255, 255, 255, 0.8) inset;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.beds-title-section {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+/* Medical/Healthcare icon or back button */
+.medical-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 30px;
+  background: linear-gradient(145deg, #ffffff, #f0f7ff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #3490dc;
+  font-size: 1.5rem;
+  box-shadow: 0 8px 15px -8px rgba(52, 144, 220, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  transition: all 0.3s ease;
+}
+
+.medical-icon:hover {
+  transform: rotate(5deg) scale(1.05);
+  color: #9333ea;
+  box-shadow: 0 12px 20px -12px #9333ea;
+}
+
+.page-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  background: linear-gradient(145deg, #1e293b, #0f172a);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0;
+  letter-spacing: -0.02em;
+  position: relative;
+  display: inline-block;
+}
+
+.page-title::before {
+  content: '🏥';
+  font-size: 2rem;
+  margin-right: 0.8rem;
+  background: none;
+  -webkit-text-fill-color: initial;
+  display: inline-block;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+.page-title::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 3rem;
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, #3490dc, #9333ea, #ec4899);
+  border-radius: 4px;
+  opacity: 0.7;
+}
+
+.add-bed-btn {
+  background: linear-gradient(145deg, #3490dc, #9333ea);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 44px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  box-shadow: 
+    0 12px 25px -10px #3490dc,
+    0 0 0 1px rgba(255, 255, 255, 0.4) inset;
+  letter-spacing: 0.3px;
+  position: relative;
+  overflow: hidden;
+}
+
+.add-bed-btn::before {
+  content: '+';
+  font-size: 1.4rem;
+  font-weight: 300;
+  line-height: 1;
+  margin-right: 0.2rem;
+}
+
+.add-bed-btn::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.add-bed-btn:hover {
+  background: linear-gradient(145deg, #9333ea, #ec4899);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 
+    0 20px 30px -12px #9333ea,
+    0 0 0 1px rgba(255, 255, 255, 0.6) inset;
+}
+
+.add-bed-btn:hover::after {
+  opacity: 1;
+}
+
+.add-bed-btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 8px 18px -10px #9333ea;
+}
+
+.beds-stats {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  background: rgba(255, 255, 255, 0.4);
+  padding: 0.8rem 1.2rem;
+  border-radius: 60px;
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+}
+
+.stat-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.8rem 1.2rem;
+  border-radius: 36px;
+  min-width: 90px;
+  border: 1px solid;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(4px);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.stat-badge:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 15px 25px -12px rgba(0, 0, 0, 0.2);
+}
+
+.stat-badge::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: currentColor;
+  opacity: 0.5;
+}
+
+.stat-badge.available {
+  border-color: #10b981;
+  background: linear-gradient(145deg, #ffffff, #f0fdf4);
+  color: #10b981;
+}
+
+.stat-badge.occupied {
+  border-color: #f59e0b;
+  background: linear-gradient(145deg, #ffffff, #fffbeb);
+  color: #f59e0b;
+}
+
+.stat-badge.maintenance {
+  border-color: #ef4444;
+  background: linear-gradient(145deg, #ffffff, #fef2f2);
+  color: #ef4444;
+}
+
+.stat-badge.total {
+  border-color: #64748b;
+  background: linear-gradient(145deg, #ffffff, #f8fafc);
+  color: #64748b;
+}
+
+.stat-number {
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1.2;
+  background: linear-gradient(145deg, currentColor, color-mix(in srgb, currentColor 70%, white));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 2px 2px rgba(0,0,0,0.05));
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: #334155;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-top: 0.3rem;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.7);
+  padding: 0.2rem 0.8rem;
+  border-radius: 20px;
+}
+
+/* Bed grid layout */
+.beds-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.8rem;
+  margin-top: 1.5rem;
+}
+
+/* Individual bed card */
+.bed-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
+  border-radius: 36px;
+  padding: 1.8rem;
+  box-shadow: 
+    0 15px 30px -12px rgba(52, 144, 220, 0.2),
+    0 0 0 1px rgba(255, 255, 255, 0.8) inset;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.bed-card:hover {
+  transform: translateY(-6px);
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 
+    0 25px 40px -15px rgba(52, 144, 220, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.9) inset;
+}
+
+.bed-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 6px;
+  background: linear-gradient(90deg, #3490dc, #9333ea, #ec4899);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.bed-card:hover::before {
+  opacity: 1;
+}
+
+/* Bed status indicators */
+.bed-status {
+  display: inline-block;
+  padding: 0.4rem 1.2rem;
+  border-radius: 30px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  margin-bottom: 1rem;
+}
+
+.bed-status.available {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.bed-status.occupied {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.bed-status.maintenance {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* Filter section for beds */
+.beds-filters {
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(8px);
+  padding: 1rem 1.8rem;
+  border-radius: 44px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  margin: 1rem 0;
+}
+
+.filter-pill {
+  padding: 0.5rem 1.4rem;
+  border-radius: 40px;
+  background: rgba(255, 255, 255, 0.8);
+  color: #334155;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.filter-pill:hover {
+  background: #3490dc;
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 15px -8px #3490dc;
+}
+
+.filter-pill.active {
+  background: linear-gradient(145deg, #3490dc, #9333ea);
+  color: white;
+  border: none;
+  box-shadow: 0 8px 18px -10px #9333ea;
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+  .beds-container {
+    padding: 1.8rem;
+  }
+  
+  .beds-header {
+    padding: 1.2rem 1.8rem;
+  }
+  
+  .page-title {
+    font-size: 2.2rem;
+  }
+  
+  .beds-grid {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .beds-page {
+    background: linear-gradient(145deg, #e8f0fe, #d0e2ff);
+  }
+  
+  .beds-container {
+    padding: 1.2rem;
+  }
+  
+  .beds-header {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 1.2rem;
+    border-radius: 36px;
+    gap: 1.2rem;
+  }
+  
+  .beds-title-section {
+    justify-content: space-between;
+  }
+  
+  .page-title {
+    font-size: 1.8rem;
+  }
+  
+  .page-title::before {
+    font-size: 1.6rem;
+    margin-right: 0.5rem;
+  }
+  
+  .page-title::after {
+    left: 2.5rem;
+    width: 50px;
+  }
+  
+  .add-bed-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 0.8rem;
+  }
+  
+  .beds-stats {
+    width: 100%;
+    justify-content: center;
+    padding: 0.6rem;
+    border-radius: 40px;
+  }
+  
+  .stat-badge {
+    min-width: 70px;
+    padding: 0.5rem 0.8rem;
+  }
+  
+  .stat-number {
+    font-size: 1.5rem;
+  }
+  
+  .stat-label {
+    font-size: 0.65rem;
+    padding: 0.15rem 0.5rem;
+  }
+  
+  .beds-grid {
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+  }
+  
+  .bed-card {
+    padding: 1.5rem;
+  }
+  
+  .beds-filters {
+    padding: 0.8rem;
+    border-radius: 36px;
+    gap: 0.5rem;
+  }
+  
+  .filter-pill {
+    padding: 0.4rem 1rem;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .beds-container {
+    padding: 1rem;
+  }
+  
+  .beds-header {
+    padding: 1rem;
+  }
+  
+  .page-title {
+    font-size: 1.5rem;
+  }
+  
+  .beds-stats {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .stat-badge {
+    flex: 1 1 calc(50% - 0.5rem);
+    min-width: auto;
+  }
+  
+  .medical-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+  }
+}
+
+/* Custom scrollbar for beds page */
+.beds-container ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.beds-container ::-webkit-scrollbar-track {
+  background: rgba(52, 144, 220, 0.1);
+  border-radius: 20px;
+}
+
+.beds-container ::-webkit-scrollbar-thumb {
+  background: linear-gradient(145deg, #3490dc, #9333ea);
+  border-radius: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.beds-container ::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(145deg, #9333ea, #ec4899);
+}
+
+/* Bed occupancy animation (optional) */
+@keyframes pulse-available {
+  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+.bed-card.available-highlight {
+  animation: pulse-available 2s infinite;
+}
+
+/* Loading skeleton for beds */
+.bed-skeleton {
+  background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+  border-radius: 36px;
+  height: 200px;
+}
+
+@keyframes skeleton-loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
